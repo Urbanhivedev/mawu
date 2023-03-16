@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mawu/Helpers/constants.dart';
-import 'package:mawu/Screens/video_screen.dart';
+import '../Helpers/constants.dart';
+import '../Helpers/colors.dart';
 
-import '../../Helpers/colors.dart';
-
+import '../Screens/video_screen.dart';
 class PlayScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
   const PlayScreen({super.key});
