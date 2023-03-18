@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mawu/Helpers/constants.dart';
 import 'package:mawu/Screens/play_screen.dart';
 
@@ -23,6 +24,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final bool _loading = false;
   final bool _obscureText = true;
   var loginUser;
+  @override
+  void initState() {
+    // TODO: implement initState
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitUp,
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +77,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: light_background,
-                              border: Border.all(color: orange)),
+                              border: Border.all(color: orange),
+                              image: const DecorationImage(
+                                  image: AssetImage(
+                                    'assets/icons/perks5.jpg',
+                                  ),
+                                  fit: BoxFit.cover)),
                         )
                       ],
                     ),
@@ -76,7 +90,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   verticalSpacer(70),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const PlayScreen()));
@@ -110,7 +124,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const PlayScreen()));
@@ -142,7 +156,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       horizontalSpacer(10),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const PlayScreen()));

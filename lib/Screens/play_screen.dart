@@ -3,6 +3,7 @@ import 'package:mawu/Helpers/constants.dart';
 import 'package:mawu/Screens/video_screen.dart';
 
 import '../../Helpers/colors.dart';
+import 'library_screen.dart';
 
 class PlayScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
@@ -30,9 +31,17 @@ class _PlayScreenState extends State<PlayScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(
-                        height: 50,
-                        width: 50,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LibraryScreen()));
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: orange,
+                        ),
                       ),
                       Column(
                         children: [
@@ -55,7 +64,12 @@ class _PlayScreenState extends State<PlayScreen> {
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: light_background,
-                            border: Border.all(color: orange)),
+                            border: Border.all(color: orange),
+                            image: const DecorationImage(
+                                image: AssetImage(
+                                  'assets/icons/perks5.jpg',
+                                ),
+                                fit: BoxFit.cover)),
                       )
                     ],
                   ),
@@ -65,13 +79,21 @@ class _PlayScreenState extends State<PlayScreen> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const VideoScreen()));
+                              builder: (context) => VideoScreen(
+                                    movieUrl:
+                                        getMovieName(MovieName.nowyouseeme),
+                                  )));
                     },
                     child: Container(
                       height: 180,
                       decoration: BoxDecoration(
                           color: light_background,
-                          border: Border.all(color: orange)),
+                          border: Border.all(color: orange),
+                          image: const DecorationImage(
+                              image: AssetImage(
+                                'assets/icons/moonlight.jpg',
+                              ),
+                              fit: BoxFit.cover)),
                     ),
                   ),
                   Row(
@@ -114,7 +136,9 @@ class _PlayScreenState extends State<PlayScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const VideoScreen()));
+                                  builder: (context) => VideoScreen(
+                                        movieUrl: getMovieName(MovieName.nf),
+                                      )));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +148,12 @@ class _PlayScreenState extends State<PlayScreen> {
                               width: width / 2,
                               decoration: BoxDecoration(
                                   color: light_background,
-                                  border: Border.all(color: orange)),
+                                  border: Border.all(color: orange),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/icons/perks5.jpg',
+                                      ),
+                                      fit: BoxFit.cover)),
                             ),
                             verticalSpacer(5),
                             Text("Latnem Pilot",
@@ -147,7 +176,10 @@ class _PlayScreenState extends State<PlayScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const VideoScreen()));
+                                  builder: (context) => VideoScreen(
+                                        movieUrl:
+                                            getMovieName(MovieName.bridgerton),
+                                      )));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +189,12 @@ class _PlayScreenState extends State<PlayScreen> {
                               width: width / 2,
                               decoration: BoxDecoration(
                                   color: light_background,
-                                  border: Border.all(color: orange)),
+                                  border: Border.all(color: orange),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/icons/perks8.jpg',
+                                      ),
+                                      fit: BoxFit.cover)),
                             ),
                             verticalSpacer(5),
                             Text("A Close Shave",
@@ -196,7 +233,10 @@ class _PlayScreenState extends State<PlayScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const VideoScreen()));
+                                  builder: (context) => VideoScreen(
+                                        movieUrl:
+                                            getMovieName(MovieName.brotherhood),
+                                      )));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +246,12 @@ class _PlayScreenState extends State<PlayScreen> {
                               width: width / 3,
                               decoration: BoxDecoration(
                                   color: light_background,
-                                  border: Border.all(color: orange)),
+                                  border: Border.all(color: orange),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/icons/perks2.jpg',
+                                      ),
+                                      fit: BoxFit.cover)),
                             ),
                             verticalSpacer(5),
                             Text("Grudge",
@@ -229,7 +274,9 @@ class _PlayScreenState extends State<PlayScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const VideoScreen()));
+                                  builder: (context) => VideoScreen(
+                                        movieUrl: getMovieName(MovieName.rick),
+                                      )));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +286,12 @@ class _PlayScreenState extends State<PlayScreen> {
                               width: width / 3,
                               decoration: BoxDecoration(
                                   color: light_background,
-                                  border: Border.all(color: orange)),
+                                  border: Border.all(color: orange),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/icons/perks6.jpg',
+                                      ),
+                                      fit: BoxFit.cover)),
                             ),
                             verticalSpacer(5),
                             Text("Shaver",
@@ -261,7 +313,10 @@ class _PlayScreenState extends State<PlayScreen> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const VideoScreen()));
+                                  builder: (context) => VideoScreen(
+                                        movieUrl:
+                                            getMovieName(MovieName.johnwick),
+                                      )));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +326,12 @@ class _PlayScreenState extends State<PlayScreen> {
                               width: width / 3,
                               decoration: BoxDecoration(
                                   color: light_background,
-                                  border: Border.all(color: orange)),
+                                  border: Border.all(color: orange),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                        'assets/icons/perks4.jpg',
+                                      ),
+                                      fit: BoxFit.cover)),
                             ),
                             verticalSpacer(5),
                             Text("Shaver",

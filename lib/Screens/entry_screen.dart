@@ -62,7 +62,7 @@ class _EntryScreenState extends State<EntryScreen> {
                               fontWeight: FontWeight.w400)),
                       verticalSpacer(15),
                       TextFormField(
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: black),
                         controller: _emailController,
                         validator: (input) => !input!.contains('@')
                             ? 'Enter correct email'
