@@ -1,11 +1,12 @@
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mawu/Helpers/constants.dart';
 import 'package:mawu/Screens/play_screen.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../Helpers/colors.dart';
+import 'package:mawu/core/service/video_player/video_player.dart';
 
 enum MovieName {
   bridgerton,
@@ -48,20 +49,8 @@ class VideoScreen extends StatefulWidget {
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-  //'assets/icons/videoplayback.mp4';
-  //"https://drive.google.com/file/d/1FBIJjkgsGu8nsNAUVMnPcHYzmmGUZoP0/view?usp=share_link";
-  //https://drive.google.com/u/0/uc?id=1dNUyxOtRBFYFQpjucSXdC7b-V0ei8CPY&export=download#.mp4
-  //  "https://drive.google.com/u/0/uc?id=1djHw2eeIoeGKd0EZA1t5YWnw7hEB5FXl&export=download#.mp4";
-  // "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4";
-  //"https://streamable.com/9jmoos";
-  // "https://www.sexyloops.com/movies/3pgripvid.mp4";
-
-  //https://drive.google.com/u/0/uc?id=1QD_HjP7fhHApMySxYsUZlRRYiACjbp_g&export=download#.mp4
-
-  //https://drive.google.com/u/0/uc?id=1QD_HjP7fhHApMySxYsUZlRRYiACjbp_g&export=download
-
-  //https://drive.google.com/file/d/1QD_HjP7fhHApMySxYsUZlRRYiACjbp_g/view?usp=sharing
   VideoPlayerController? _controller;
+  AppVideoPlayer appVideoPlayer = AppVideoPlayer();
 
   @override
   void initState() {
@@ -77,6 +66,7 @@ class _VideoScreenState extends State<VideoScreen> {
           _controller!.play();
         });
       });
+    appVideoPlayer.init();
   }
 
   @override
@@ -84,149 +74,211 @@ class _VideoScreenState extends State<VideoScreen> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
     ]);
     super.dispose();
+    appVideoPlayer.removeController(appVideoPlayer.index);
   }
 
   @override
   Widget build(BuildContext context) {
     var width = (MediaQuery.of(context).size.width - 50);
     var heigth = (MediaQuery.of(context).size.height - 50);
+
     return Scaffold(
       backgroundColor: black,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.all(10),
-                height: heigth,
-                width: width,
-                decoration: BoxDecoration(
-                    color: light_background, border: Border.all(color: orange)),
-                child: Stack(
+          child: Stack(
+            children: [
+              // PageView.builder(
+              //   itemCount: _videosUrl.length,
+              //   itemBuilder: (context, index) {
+              //     return VideoPlayerWidget(
+              //       videpPath: _videosUrl.elementAt(index),
+              //     );
+              //   },
+              // ),
+              Center(
+                child: appVideoPlayer
+                        .videoController(appVideoPlayer.index)!
+                        .value
+                        .isInitialized
+                    ? AspectRatio(
+                        aspectRatio: appVideoPlayer
+                            .videoController(appVideoPlayer.index)!
+                            .value
+                            .aspectRatio,
+                        child: VideoPlayer(appVideoPlayer
+                            .videoController(appVideoPlayer.index)!),
+                      )
+                    : const CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+              ),
+
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PlayScreen(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: orange,
+                    ),
+                  ),
+                  horizontalSpacer(10),
+                  Text(
+                    "CC",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: orange,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    !_controller!.value.isInitialized
-                        ? const Center(
-                            child: SpinKitCircle(
-                              color: Colors.white,
-                              size: 50.0,
-                            ),
-                          )
-                        : _controller!.value.isInitialized
-                            ? Center(
-                                child: VideoPlayer(
-                                  _controller!,
-                                ),
-                              )
-                            : const Center(
-                                child: SpinKitCircle(
-                                  color: Colors.white,
-                                  size: 50.0,
-                                ),
-                              ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    IconButton(
+                      onPressed: appVideoPlayer.previousVideo,
+                      icon: const Icon(
+                        Icons.skip_previous,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _controller!.pause();
-                                setState(() {
-                                  SystemChrome.setPreferredOrientations([
-                                    DeviceOrientation.portraitUp,
-                                    DeviceOrientation.portraitUp,
-                                  ]);
-                                });
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const PlayScreen()));
-                              },
-                              child: Icon(
-                                Icons.arrow_back,
-                                color: orange,
-                              ),
-                            ),
-                            horizontalSpacer(10),
-                            Text("CC",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: orange,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500)),
-                          ],
+                        IconButton(
+                          onPressed: () => appVideoPlayer
+                              .stopController(appVideoPlayer.index),
+                          icon: const Icon(
+                            Icons.stop,
+                            color: Colors.white,
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                //_controller!.dispose();
-                              },
-                              child: const Icon(
-                                Icons.stop,
-                                color: Colors.white,
-                              ),
-                            ),
-                            horizontalSpacer(10),
-                            GestureDetector(
-                              onTap: () {
-                                _controller!.value.isPlaying
-                                    ? _controller!.pause()
-                                    : _controller!.play();
-                              },
-                              child: Icon(
-                                _controller!.value.isPlaying
-                                    ? Icons.pause
-                                    : Icons.play_arrow,
-                                color: Colors.white,
-                              ),
-                            ),
-                            horizontalSpacer(10),
-                            GestureDetector(
-                              onTap: () {
-                                _controller!
-                                    .seekTo(const Duration(seconds: 10));
-                              },
-                              child: const Icon(
-                                Icons.skip_next,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                        horizontalSpacer(10),
+                        IconButton(
+                          onPressed: () =>
+                              appVideoPlayer.pauseVideo(appVideoPlayer.index),
+                          icon: const Icon(
+                            Icons.pause,
+                            color: Colors.white,
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("CC",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: Colors.transparent,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500)),
-                            Text("FUNDAMENTALS",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: orange,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500)),
-                            Text("11:16",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500)),
-                          ],
+                        horizontalSpacer(10),
+                        IconButton(
+                          onPressed: () =>
+                              appVideoPlayer.playVideo(appVideoPlayer.index),
+                          icon: const Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
+                    ),
+                    IconButton(
+                      onPressed: appVideoPlayer.nextVideo,
+                      icon: const Icon(
+                        Icons.skip_next_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        Positioned(
+                          child: Container(
+                            height: 10,
+                            width: MediaQuery.of(context).size.width *
+                                appVideoPlayer.buffer,
+                            color: kBorderLineColor,
+                          ),
+                        ),
+                        Positioned(
+                          child: Container(
+                            height: 10,
+                            width: MediaQuery.of(context).size.width *
+                                appVideoPlayer.position,
+                            color: orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "CC",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.transparent,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "FUNDAMENTALS",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: orange,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "${[
+                            appVideoPlayer
+                                .videoController(appVideoPlayer.index)!
+                                .value
+                                .position
+                                .inMinutes,
+                            appVideoPlayer
+                                .videoController(appVideoPlayer.index)!
+                                .value
+                                .position
+                                .inSeconds
+                          ].map((seg) => seg.remainder(60).toString().padLeft(2, '0')).join(':')} : ${[
+                            appVideoPlayer
+                                .videoController(appVideoPlayer.index)!
+                                .value
+                                .duration
+                                .inMinutes,
+                            appVideoPlayer
+                                .videoController(appVideoPlayer.index)!
+                                .value
+                                .duration
+                                .inSeconds
+                          ].map((seg) => seg.remainder(60).toString().padLeft(2, '0')).join(':')}",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
                     ),
                   ],
                 ),
@@ -236,5 +288,75 @@ class _VideoScreenState extends State<VideoScreen> {
         ),
       ),
     );
+  }
+}
+
+class VideoPlayerWidget extends StatefulWidget {
+  const VideoPlayerWidget({
+    super.key,
+    required this.videpPath,
+  });
+  final String videpPath;
+
+  @override
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+  late VideoPlayerController _videoController;
+  Future<void>? _initializeVideoPlayerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    _videoController = VideoPlayerController.network(widget.videpPath);
+    _initializeVideoPlayerFuture = _videoController.initialize();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initializeVideoPlayerFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Chewie(
+            controller: ChewieController(
+              videoPlayerController: _videoController,
+              looping: false,
+              autoInitialize: true,
+              errorBuilder: (context, errorMessage) {
+                return Center(
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        } else {
+          return const Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+          ));
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _videoController.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mawu/Helpers/constants.dart';
-import 'package:mawu/Screens/library_screen.dart';
-
-import '../../Helpers/colors.dart';
+import '../Helpers/constants.dart';
+import '../Helpers/colors.dart';
+import '../Screens/library_screen.dart';
 
 class EntryScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
@@ -23,6 +22,13 @@ class _EntryScreenState extends State<EntryScreen> {
   bool _loading = false;
   final bool _obscureText = true;
   var loginUser;
+
+  @override
+  void initState() {
+    super.initState();
+    // _passwordController.text = "Password@1";
+    // _emailController.text = "user@gmail.com";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +75,7 @@ class _EntryScreenState extends State<EntryScreen> {
                             : null,
                         onSaved: (input) => email = input!,
                         autofillHints: const [AutofillHints.email],
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.orange,
                         decoration: InputDecoration(
                           hintStyle: const TextStyle(color: Colors.grey),
                           filled: true,

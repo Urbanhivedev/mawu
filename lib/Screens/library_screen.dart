@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mawu/Helpers/constants.dart';
+import 'package:mawu/Helpers/colors.dart';
 import 'package:mawu/Screens/play_screen.dart';
-
-import '../../Helpers/colors.dart';
 
 class LibraryScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
