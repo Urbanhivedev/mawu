@@ -3,6 +3,8 @@ import 'package:mawu/Helpers/constants.dart';
 import 'package:mawu/Screens/video_screen.dart';
 
 import '../../Helpers/colors.dart';
+import '../Config/Repositories/user_repository.dart';
+import '../Models/app_user_model.dart';
 import 'library_screen.dart';
 
 class PlayScreen extends StatefulWidget {
@@ -14,6 +16,18 @@ class PlayScreen extends StatefulWidget {
 }
 
 class _PlayScreenState extends State<PlayScreen> {
+  AppUser? currentUser;
+
+  @override
+  void initState() {
+    UserRepository().fetchCurrentUser().then((value) {
+      setState(() {
+        currentUser = value;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = (MediaQuery.of(context).size.width - 70);
@@ -65,9 +79,11 @@ class _PlayScreenState extends State<PlayScreen> {
                             shape: BoxShape.circle,
                             color: light_background,
                             border: Border.all(color: orange),
-                            image: const DecorationImage(
-                                image: AssetImage(
-                                  'assets/icons/perks5.jpg',
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                  currentUser == null
+                                      ? ""
+                                      : currentUser!.imageUrl,
                                 ),
                                 fit: BoxFit.cover)),
                       )

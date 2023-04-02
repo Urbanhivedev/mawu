@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mawu">
+    package="com.urbanHive.mawu">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="mawu"

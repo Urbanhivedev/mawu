@@ -4,6 +4,10 @@ import 'package:mawu/Helpers/constants.dart';
 import 'package:mawu/Helpers/colors.dart';
 import 'package:mawu/Screens/play_screen.dart';
 
+import '../Config/Repositories/user_repository.dart';
+import '../Models/app_user_model.dart';
+import 'discover_test.dart';
+
 class LibraryScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
   const LibraryScreen({super.key});
@@ -23,9 +27,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
   final bool _loading = false;
   final bool _obscureText = true;
   var loginUser;
+  AppUser? currentUser;
+
   @override
   void initState() {
     // TODO: implement initState
+    UserRepository().fetchCurrentUser().then((value) {
+      setState(() {
+        currentUser = value;
+      });
+    });
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitUp,
@@ -77,9 +88,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               shape: BoxShape.circle,
                               color: light_background,
                               border: Border.all(color: orange),
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                    'assets/icons/perks5.jpg',
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                    currentUser == null
+                                        ? ""
+                                        : currentUser!.imageUrl,
                                   ),
                                   fit: BoxFit.cover)),
                         )
@@ -187,11 +200,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ],
                   ),
                   verticalSpacer(90),
-                  Text("FRIENDS ONLINE: 11",
-                      style: TextStyle(
-                          color: orange,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DiscoverTestScreen(
+                                    currentUser: currentUser!,
+                                  )));
+                    },
+                    child: Text("FRIENDS ONLINE",
+                        style: TextStyle(
+                            color: orange,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500)),
+                  ),
                 ],
               ),
             ),
