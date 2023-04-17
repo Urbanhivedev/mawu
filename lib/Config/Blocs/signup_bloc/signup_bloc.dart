@@ -32,7 +32,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await firestoreRepository.saveUserCredentials(
             event.email, event.firstName, event.lastName, DateTime.now());
         // emit(SignupSuccessful(user));
-        await firebaseStorageRepository.uploadImage(event.image);
+        // await firebaseStorageRepository.uploadImage(event.image);
         await firestoreRepository.saveUsersCredentialslocal();
         // emit(LoginSuccessful(user));
       }

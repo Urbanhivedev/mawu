@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
-import '../../Helpers/sharedPrefs.dart';
+import '../../Helpers/shared_pref.dart';
 import '../../Models/app_user_model.dart';
 
 class UserRepository {

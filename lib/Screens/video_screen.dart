@@ -6,7 +6,9 @@ import 'package:mawu/Screens/play_screen.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../Helpers/colors.dart';
+import '../Config/Repositories/firestore_repository.dart';
 import '../Helpers/constants.dart';
+import '../Models/movie_model.dart';
 
 enum MovieName {
   bridgerton,
@@ -40,9 +42,10 @@ String getMovieName(MovieName type) {
 }
 
 class VideoScreen extends StatefulWidget {
-  final String movieUrl;
+  final Movie movie;
+  final int startAt;
   static const routeName = '/entry_screen';
-  const VideoScreen({super.key, required this.movieUrl});
+  const VideoScreen({super.key, required this.movie, this.startAt = 0});
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -55,6 +58,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void initState() {
     super.initState();
+    duration = widget.startAt;
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -79,6 +83,14 @@ class _VideoScreenState extends State<VideoScreen> {
     //appVideoPlayer.removeController(appVideoPlayer.index);
   }
 
+  void updateCurrentDuration(Duration currentDuration) {
+    // Do something with the currentDuration value in the parent widget
+    duration = currentDuration.inMilliseconds;
+    print(currentDuration);
+  }
+
+  late int duration;
+
   @override
   Widget build(BuildContext context) {
     var width = (MediaQuery.of(context).size.width - 50);
@@ -86,6 +98,8 @@ class _VideoScreenState extends State<VideoScreen> {
 
     return WillPopScope(
       onWillPop: () async {
+        await FirestoreRepository()
+            .saveContinueWatching(widget.movie.id!, duration);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -102,192 +116,39 @@ class _VideoScreenState extends State<VideoScreen> {
             child: Stack(
               children: [
                 VideoPlayerWidget(
-                  videpPath: widget.movieUrl,
+                  videpPath: widget.movie.url,
+                  onUpdateDuration: updateCurrentDuration,
+                  startAt: Duration(milliseconds: duration),
+                  movie: widget.movie,
+                  duration: duration,
                 ),
-                // Center(
-                //   child: appVideoPlayer
-                //           .videoController(appVideoPlayer.index)!
-                //           .value
-                //           .isInitialized
-                //       ? AspectRatio(
-                //           aspectRatio: appVideoPlayer
-                //               .videoController(appVideoPlayer.index)!
-                //               .value
-                //               .aspectRatio,
-                //           child: VideoPlayer(appVideoPlayer
-                //               .videoController(appVideoPlayer.index)!),
-                //         )
-                //       : const CircularProgressIndicator(
-                //           color: Colors.white,
-                //         ),
-                // ),
-
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PlayScreen(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: orange,
-                      ),
-                    ),
-                    horizontalSpacer(10),
-                    Text(
-                      "CC",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: orange,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Center(
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       IconButton(
-                //         onPressed: appVideoPlayer.previousVideo,
-                //         icon: const Icon(
-                //           Icons.skip_previous,
-                //           color: Colors.white,
-                //         ),
+                // Row(
+                //   children: [
+                //     IconButton(
+                //       onPressed: () {
+                //         Navigator.pushReplacement(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => const PlayScreen(),
+                //           ),
+                //         );
+                //       },
+                //       icon: Icon(
+                //         Icons.arrow_back,
+                //         color: orange,
                 //       ),
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           IconButton(
-                //             onPressed: () => appVideoPlayer
-                //                 .stopController(appVideoPlayer.index),
-                //             icon: const Icon(
-                //               Icons.stop,
-                //               color: Colors.white,
-                //             ),
-                //           ),
-                //           horizontalSpacer(10),
-                //           IconButton(
-                //             onPressed: () =>
-                //                 appVideoPlayer.pauseVideo(appVideoPlayer.index),
-                //             icon: const Icon(
-                //               Icons.pause,
-                //               color: Colors.white,
-                //             ),
-                //           ),
-                //           horizontalSpacer(10),
-                //           IconButton(
-                //             onPressed: () =>
-                //                 appVideoPlayer.playVideo(appVideoPlayer.index),
-                //             icon: const Icon(
-                //               Icons.play_arrow,
-                //               color: Colors.white,
-                //             ),
-                //           ),
-                //         ],
+                //     ),
+                //     horizontalSpacer(10),
+                //     Text(
+                //       "CC",
+                //       textAlign: TextAlign.left,
+                //       style: TextStyle(
+                //         color: orange,
+                //         fontSize: 20,
+                //         fontWeight: FontWeight.w500,
                 //       ),
-                //       IconButton(
-                //         onPressed: appVideoPlayer.nextVideo,
-                //         icon: const Icon(
-                //           Icons.skip_next_rounded,
-                //           color: Colors.white,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // Align(
-                //   alignment: Alignment.bottomCenter,
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Stack(
-                //         children: [
-                //           Positioned(
-                //             child: Container(
-                //               height: 10,
-                //               width: MediaQuery.of(context).size.width *
-                //                   appVideoPlayer.buffer,
-                //               color: kBorderLineColor,
-                //             ),
-                //           ),
-                //           Positioned(
-                //             child: Container(
-                //               height: 10,
-                //               width: MediaQuery.of(context).size.width *
-                //                   appVideoPlayer.position,
-                //               color: orange,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           const Text(
-                //             "CC",
-                //             textAlign: TextAlign.left,
-                //             style: TextStyle(
-                //               color: Colors.transparent,
-                //               fontSize: 20,
-                //               fontWeight: FontWeight.w500,
-                //             ),
-                //           ),
-                //           Text(
-                //             "FUNDAMENTALS",
-                //             textAlign: TextAlign.left,
-                //             style: TextStyle(
-                //               color: orange,
-                //               fontSize: 20,
-                //               fontWeight: FontWeight.w500,
-                //             ),
-                //           ),
-                //           Text(
-                //             "${[
-                //               appVideoPlayer
-                //                   .videoController(appVideoPlayer.index)!
-                //                   .value
-                //                   .position
-                //                   .inMinutes,
-                //               appVideoPlayer
-                //                   .videoController(appVideoPlayer.index)!
-                //                   .value
-                //                   .position
-                //                   .inSeconds
-                //             ].map((seg) => seg.remainder(60).toString().padLeft(2, '0')).join(':')} : ${[
-                //               appVideoPlayer
-                //                   .videoController(appVideoPlayer.index)!
-                //                   .value
-                //                   .duration
-                //                   .inMinutes,
-                //               appVideoPlayer
-                //                   .videoController(appVideoPlayer.index)!
-                //                   .value
-                //                   .duration
-                //                   .inSeconds
-                //             ].map((seg) => seg.remainder(60).toString().padLeft(2, '0')).join(':')}",
-                //             textAlign: TextAlign.left,
-                //             style: TextStyle(
-                //               color: white,
-                //               fontSize: 20,
-                //               fontWeight: FontWeight.w500,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       const SizedBox(
-                //         height: 20,
-                //       ),
-                //     ],
-                //   ),
+                //     ),
+                //   ],
                 // ),
               ],
             ),
@@ -302,8 +163,16 @@ class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({
     super.key,
     required this.videpPath,
+    required this.onUpdateDuration,
+    required this.startAt,
+    required this.movie,
+    required this.duration,
   });
   final String videpPath;
+  final Function(Duration) onUpdateDuration;
+  final Duration startAt;
+  final Movie movie;
+  final int duration;
 
   @override
   State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
@@ -313,6 +182,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
   Future<void>? _initializeVideoPlayerFuture;
+  Duration _currentDuration = Duration.zero;
 
   @override
   void initState() {
@@ -332,11 +202,14 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         .then((_) => setState(() => _chewieController = ChewieController(
               videoPlayerController: _videoPlayerController,
               autoPlay: true,
-              fullScreenByDefault: true,
-              overlay: Row(
+              // fullScreenByDefault: true,
+              startAt: widget.startAt,
+              customControls: Row(
                 children: [
                   IconButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await FirestoreRepository().saveContinueWatching(
+                          widget.movie.id!, widget.duration);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -364,6 +237,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
               //aspectRatio: _videoPlayerController.value.aspectRatio,
             )));
+    _videoPlayerController.addListener(() {
+      setState(() {
+        _currentDuration = _videoPlayerController.value.position;
+        widget.onUpdateDuration(_currentDuration);
+      });
+    });
   }
 
   @override

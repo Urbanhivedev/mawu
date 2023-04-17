@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mawu/Screens/play_screen.dart';
 import 'package:mawu/Screens/register_screen.dart';
 import '../Config/Blocs/login_bloc/login_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -127,7 +128,7 @@ class _EntryScreenState extends State<EntryScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const LibraryScreen()));
+                                        const PlayScreen()));
                           }
                         }),
                         child: BlocBuilder<LoginBloc, LoginState>(

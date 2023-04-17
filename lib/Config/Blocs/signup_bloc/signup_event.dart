@@ -12,12 +12,12 @@ class SignupButtonPressed extends SignupEvent {
   String firstName;
   String lastName;
   String password;
-  File image;
+  // File image;
 
   SignupButtonPressed(
       {required this.email,
       required this.password,
-      required this.image,
+      // required this.image,
       required this.lastName,
       required this.firstName});
 

@@ -1,13 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mawu/Screens/entry_screen.dart';
+import 'package:mawu/Screens/play_screen.dart';
 import '../Config/Blocs/signup_bloc/signup_bloc.dart';
 import '../Helpers/constants.dart';
 import '../Helpers/colors.dart';
-import '../Screens/library_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const routeName = '/entry_screen';
@@ -26,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  File? image;
+  //File? image;
   String firstName = "";
   String lastName = "";
   String email = "";
@@ -44,19 +41,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  Future<String?> onPickImage() async {
-    setState(() {
-      _loading = true;
-    });
-    final imagePicked =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  // Future<String?> onPickImage() async {
+  //   setState(() {
+  //     _loading = true;
+  //   });
+  //   final imagePicked =
+  //       await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (imagePicked != null) {
-      return imagePicked.path;
-    } else {
-      return null;
-    }
-  }
+  //   if (imagePicked != null) {
+  //     return imagePicked.path;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   @override
   void initState() {
@@ -88,78 +85,79 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   //   'assets/icons/mawu_logo.svg',
                   //   fit: BoxFit.cover,
                   // ),
-                  verticalSpacer(20),
-                  Center(
-                    child: _loading
-                        ? Container(
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : image == null
-                            ? Container(
-                                height: 100,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                      icon: Icon(
-                                        Icons.image,
-                                        color: white.withOpacity(0.7),
-                                        size: 30,
-                                      ),
-                                      onPressed: () async {
-                                        var imagePath = await onPickImage();
-                                        setState(() {
-                                          _loading = false;
-                                        });
-                                        if (imagePath == null) {
-                                          Future.delayed(Duration.zero, () {
-                                            ScaffoldMessenger.of(context)
-                                              ..removeCurrentSnackBar()
-                                              ..showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    "Failed to pick an Image"),
-                                                backgroundColor: Colors.black,
-                                              ));
-                                          });
-                                        } else {
-                                          final tempimage =
-                                              File(imagePath.toString());
-                                          setState(() {
-                                            image = tempimage;
-                                          });
-                                        }
-                                      }),
-                                ),
-                              )
-                            : Container(
-                                height: 100,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: FileImage(image!),
-                                      fit: BoxFit.cover),
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                  ),
+                  verticalSpacer(40),
+                  // Center(
+                  //   child: _loading
+                  //       ? Container(
+                  //           height: 100,
+                  //           width: 100,
+                  //           decoration: BoxDecoration(
+                  //             border: Border.all(
+                  //               color: Colors.grey,
+                  //               width: 1,
+                  //             ),
+                  //           ),
+                  //           child: const Center(
+                  //             child: CircularProgressIndicator(),
+                  //           ),
+                  //         )
+                  //       : image == null
+                  //           ? Container(
+                  //               height: 100,
+                  //               width: 100,
+                  //               decoration: BoxDecoration(
+                  //                 border: Border.all(
+                  //                   color: Colors.grey,
+                  //                   width: 1,
+                  //                 ),
+                  //               ),
+                  //               child: Center(
+                  //                 child: IconButton(
+                  //                     icon: Icon(
+                  //                       Icons.image,
+                  //                       color: white.withOpacity(0.7),
+                  //                       size: 30,
+                  //                     ),
+                  //                     onPressed: () async {
+                  //                       var imagePath = await onPickImage();
+                  //                       setState(() {
+                  //                         _loading = false;
+                  //                       });
+                  //                       if (imagePath == null) {
+                  //                         Future.delayed(Duration.zero, () {
+                  //                           ScaffoldMessenger.of(context)
+                  //                             ..removeCurrentSnackBar()
+                  //                             ..showSnackBar(const SnackBar(
+                  //                               content: Text(
+                  //                                   "Failed to pick an Image"),
+                  //                               backgroundColor: Colors.black,
+                  //                             ));
+                  //                         });
+                  //                       } else {
+                  //                         final tempimage =
+                  //                             File(imagePath.toString());
+                  //                         setState(() {
+                  //                           image = tempimage;
+                  //                         });
+                  //                       }
+                  //                     }),
+                  //               ),
+                  //             )
+                  //           : Container(
+                  //               height: 100,
+                  //               width: 100,
+                  //               decoration: BoxDecoration(
+                  //                 image: DecorationImage(
+                  //                     image: FileImage(image!),
+                  //                     fit: BoxFit.cover),
+                  //                 border: Border.all(
+                  //                   color: Colors.grey,
+                  //                   width: 1,
+                  //                 ),
+                  //               ),
+                  //             ),
+                  // ),
+
                   verticalSpacer(15),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -286,7 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const LibraryScreen()));
+                                          const PlayScreen()));
                             }
                           },
                           child: BlocBuilder<SignupBloc, SignupState>(
@@ -337,24 +335,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             FocusScope.of(context).unfocus();
                                             var validate = _formKey.currentState
                                                 ?.validate();
-                                            if (image == null) {
-                                              validate = false;
-                                              Future.delayed(Duration.zero, () {
-                                                ScaffoldMessenger.of(context)
-                                                  ..removeCurrentSnackBar()
-                                                  ..showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        'Profile Image Field Cannot Be Empty'),
-                                                    backgroundColor: Colors.red,
-                                                  ));
-                                              });
-                                            }
+                                            // if (image == null) {
+                                            //   validate = false;
+                                            //   Future.delayed(Duration.zero, () {
+                                            //     ScaffoldMessenger.of(context)
+                                            //       ..removeCurrentSnackBar()
+                                            //       ..showSnackBar(const SnackBar(
+                                            //         content: Text(
+                                            //             'Profile Image Field Cannot Be Empty'),
+                                            //         backgroundColor: Colors.red,
+                                            //       ));
+                                            //   });
+                                            // }
                                             if (_formKey.currentState!
                                                 .validate()) {
                                               FocusScope.of(context).unfocus();
                                               signupBloc?.add(
                                                 SignupButtonPressed(
-                                                  image: image!,
+                                                  // image: image!,
                                                   email: _emailAddressController
                                                       .text,
                                                   firstName:

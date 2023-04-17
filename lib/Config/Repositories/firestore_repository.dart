@@ -5,8 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Helpers/shared_pref.dart';
 import '../../Models/app_user_model.dart';
 import '../../Models/chat_map_model.dart';
+import '../../Models/movie_model.dart';
 
 class FirestoreRepository {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -17,6 +19,8 @@ class FirestoreRepository {
 
   CollectionReference matchFirebaseFirestore =
       FirebaseFirestore.instance.collection("matches");
+  CollectionReference movieFirebaseFirestore =
+      FirebaseFirestore.instance.collection("movies");
 
   Future<void> saveUserCredentials(
     String email,
@@ -36,6 +40,20 @@ class FirestoreRepository {
         SetOptions(
           merge: true,
         ));
+    return;
+  }
+
+  Future<void> saveContinueWatching(String movieId, int duration) async {
+    String? uid = firebaseAuth.currentUser?.uid.toString();
+    Map<String, dynamic> continueWatchingMap = {
+      "movieId": movieId,
+      "duration": duration,
+    };
+    await firebaseFirestore
+        .doc(uid)
+        .collection("continueWatching")
+        .doc(movieId)
+        .set(continueWatchingMap);
     return;
   }
 
@@ -81,6 +99,179 @@ class FirestoreRepository {
         return AppUser.fromJson(snapshot.data());
       }
     } catch (error) {}
+    return null;
+  }
+
+  Stream<DocumentSnapshot<Object?>>? getUsersCredentialStream() {
+    try {
+      String uid = firebaseAuth.currentUser!.uid;
+
+      final appUser = firebaseFirestore.doc(uid);
+      final snapshot = appUser.snapshots();
+      return snapshot;
+
+      // if (snapshot.) {
+      //   return AppUser.fromJson(snapshot.data());
+      // }
+    } catch (error) {}
+    return null;
+  }
+
+  Stream<QuerySnapshot<Object?>>? getContinueWatchingStream() {
+    try {
+      String uid = firebaseAuth.currentUser!.uid;
+
+      final appUser = firebaseFirestore.doc(uid).collection("continueWatching");
+      final snapshot = appUser.snapshots();
+      return snapshot;
+
+      // if (snapshot.) {
+      //   return AppUser.fromJson(snapshot.data());
+      // }
+    } catch (error) {}
+    return null;
+  }
+
+  Future<Movie?> GetMovieById(movieId) async {
+    try {
+      final movies = movieFirebaseFirestore.doc(movieId);
+      final snapshot = await movies.get();
+
+      if (snapshot.exists) {
+        return Movie.fromJson(snapshot.data());
+      }
+    } catch (error) {}
+    return null;
+  }
+
+  Future<List<Movie>> getUserMovies(List<dynamic> movieIds) async {
+    List<Movie> movies = [];
+    try {
+      for (var movieId in movieIds) {
+        final movie = await movieFirebaseFirestore.doc(movieId).get();
+        if (movie.exists) {
+          movies.add(Movie.fromJson(movie.data()));
+        }
+      }
+    } catch (error) {
+      print('Error retrieving movies: $error');
+    }
+    return movies;
+  }
+
+//   Stream<AppUser?> getUsersCredentials() {
+//   final userController = StreamController<AppUser?>();
+
+//   try {
+//     String uid = firebaseAuth.currentUser!.uid;
+
+//     final appUser = firebaseFirestore.doc(uid);
+
+//     appUser.snapshots().listen((snapshot) {
+//       if (snapshot.exists) {
+//         final appUser = AppUser.fromJson(snapshot.data());
+//         // Add the continue watching property to the appUser object here
+//         appUser.continueWatching = ... // Add your logic here to get the continueWatching property
+//         userController.add(appUser);
+//       } else {
+//         userController.add(null);
+//       }
+//     });
+//   } catch (error) {
+//     userController.add(null);
+//   }
+
+//   return userController.stream;
+// }
+
+  Future<List<Movie>?> getAllMovies() async {
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      List<Movie> allMovies = [];
+      final movies = await movieFirebaseFirestore.get();
+      if (movies.docs.isNotEmpty) {
+        // List<Movie> allMovies =
+        //     movies.docs.map((doc) => Movie.fromJson(doc)).toList();
+        for (var movie in movies.docs) {
+          var newMovie = Movie.fromJson(movie);
+
+          if (SharedPreferenceHelper()
+                  .getFromLocalCache(sharedPreferences, movie.id) ==
+              null) {
+            SharedPreferenceHelper().saveToLocalCache(key: movie.id, value: 0);
+          }
+          allMovies.add(newMovie);
+        }
+        print(allMovies);
+        print(allMovies);
+        return allMovies;
+      }
+    } catch (error) {
+      print(error);
+      // handle the error
+    }
+    return null;
+  }
+
+  Future<List<Movie>?> getAllTrendingMovies() async {
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      List<Movie> allMovies = [];
+      final trendingmovies =
+          movieFirebaseFirestore.where("trending", isEqualTo: true);
+      final movies = await trendingmovies.get();
+      if (movies.docs.isNotEmpty) {
+        // List<Movie> allMovies =
+        //     movies.docs.map((doc) => Movie.fromJson(doc)).toList();
+        for (var movie in movies.docs) {
+          var newMovie = Movie.fromJson(movie);
+
+          if (SharedPreferenceHelper()
+                  .getFromLocalCache(sharedPreferences, movie.id) ==
+              null) {
+            SharedPreferenceHelper().saveToLocalCache(key: movie.id, value: 0);
+          }
+          allMovies.add(newMovie);
+        }
+        print(allMovies);
+        print(allMovies);
+        return allMovies;
+      }
+    } catch (error) {
+      print(error);
+      // handle the error
+    }
+    return null;
+  }
+
+  Future<List<Movie>?> getAllRecommendedMovies() async {
+    try {
+      final sharedPreferences = await SharedPreferences.getInstance();
+      List<Movie> allMovies = [];
+      final trendingmovies =
+          movieFirebaseFirestore.where("recommended", isEqualTo: true);
+      final movies = await trendingmovies.get();
+      if (movies.docs.isNotEmpty) {
+        // List<Movie> allMovies =
+        //     movies.docs.map((doc) => Movie.fromJson(doc)).toList();
+        for (var movie in movies.docs) {
+          var newMovie = Movie.fromJson(movie);
+
+          if (SharedPreferenceHelper()
+                  .getFromLocalCache(sharedPreferences, movie.id) ==
+              null) {
+            SharedPreferenceHelper().saveToLocalCache(key: movie.id, value: 0);
+          }
+          allMovies.add(newMovie);
+        }
+        print(allMovies);
+        print(allMovies);
+        return allMovies;
+      }
+    } catch (error) {
+      print(error);
+      // handle the error
+    }
     return null;
   }
 

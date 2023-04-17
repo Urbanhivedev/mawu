@@ -67,7 +67,7 @@ class WelcomeScreen extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 60),
                           decoration: BoxDecoration(
-                            color: white.withOpacity(0.6),
+                            color: white,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: TextButton(
