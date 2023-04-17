@@ -1,4 +1,4 @@
-package com.example.mawu
+package com.urbanHive.mawu
 
 import io.flutter.embedding.android.FlutterActivity
 

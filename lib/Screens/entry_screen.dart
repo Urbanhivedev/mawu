@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mawu/Screens/play_screen.dart';
+import 'package:mawu/Screens/register_screen.dart';
+import '../Config/Blocs/login_bloc/login_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../Helpers/constants.dart';
 import '../Helpers/colors.dart';
 import '../Screens/library_screen.dart';
@@ -19,9 +23,10 @@ class _EntryScreenState extends State<EntryScreen> {
 
   String password = '';
   String email = '';
-  bool _loading = false;
+  final bool _loading = false;
   final bool _obscureText = true;
   var loginUser;
+  LoginBloc? loginBloc;
 
   @override
   void initState() {
@@ -32,9 +37,7 @@ class _EntryScreenState extends State<EntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var loading = const CircularProgressIndicator(
-      color: Colors.white,
-    );
+    loginBloc = BlocProvider.of<LoginBloc>(context);
     return Form(
       key: _formKey,
       child: Scaffold(
@@ -68,7 +71,7 @@ class _EntryScreenState extends State<EntryScreen> {
                               fontWeight: FontWeight.w400)),
                       verticalSpacer(15),
                       TextFormField(
-                        style: const TextStyle(color: Colors.black),
+                        style: TextStyle(color: black),
                         controller: _emailController,
                         validator: (input) => !input!.contains('@')
                             ? 'Enter correct email'
@@ -79,6 +82,8 @@ class _EntryScreenState extends State<EntryScreen> {
                         decoration: InputDecoration(
                           hintStyle: const TextStyle(color: Colors.grey),
                           filled: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: orange)),
@@ -105,6 +110,8 @@ class _EntryScreenState extends State<EntryScreen> {
                         decoration: InputDecoration(
                           hintStyle: const TextStyle(color: Colors.grey),
                           filled: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: orange)),
@@ -114,46 +121,117 @@ class _EntryScreenState extends State<EntryScreen> {
                       ),
 
                       const SizedBox(height: 40),
-
-                      GestureDetector(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Center(
-                            child: Container(
+                      BlocListener<LoginBloc, LoginState>(
+                        listener: ((context, state) {
+                          if (state is LoginSuccessful) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PlayScreen()));
+                          }
+                        }),
+                        child: BlocBuilder<LoginBloc, LoginState>(
+                            builder: ((context, state) {
+                          if (state is LoginInProgress) {
+                            return Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 60),
-                              decoration: BoxDecoration(
-                                  color: black,
-                                  border: Border.all(color: Colors.white)),
-                              child: TextButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        _loading = true;
-                                      });
-                                      await Future.delayed(
-                                          const Duration(seconds: 2));
-                                      _loading = false;
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LibraryScreen()));
-                                    }
-                                  },
-                                  child: _loading == true
-                                      ? Center(
-                                          child: loading,
-                                        )
-                                      : const Text("SIGN IN",
+                                  const EdgeInsets.symmetric(horizontal: 32),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 60),
+                                  decoration: BoxDecoration(
+                                      color: black,
+                                      border: Border.all(color: Colors.white)),
+                                  child: TextButton(
+                                      onPressed: () async {},
+                                      child: loader(size: 25)),
+                                ),
+                              ),
+                            );
+                          } else if (state is LoginFailed) {
+                            Future.delayed(Duration.zero, () {
+                              // Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context)
+                                ..removeCurrentSnackBar()
+                                ..showSnackBar(SnackBar(
+                                  content: Text(state.message),
+                                  backgroundColor: Colors.red,
+                                ));
+                            });
+                          }
+
+                          return GestureDetector(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 32),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 60),
+                                  decoration: BoxDecoration(
+                                      color: black,
+                                      border: Border.all(color: Colors.white)),
+                                  child: TextButton(
+                                      onPressed: () async {
+                                        FocusScope.of(context).unfocus();
+                                        if (_formKey.currentState!.validate()) {
+                                          loginBloc?.add(
+                                            LoginButtonPressed(
+                                                email: _emailController.text,
+                                                password:
+                                                    _passwordController.text),
+                                          );
+                                        }
+                                      },
+                                      child: const Text("SIGN IN",
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 18,
                                               fontWeight: FontWeight.w700))),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        })),
                       ),
+
+                      // GestureDetector(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 32),
+                      //     child: Center(
+                      //       child: Container(
+                      //         padding:
+                      //             const EdgeInsets.symmetric(horizontal: 60),
+                      //         decoration: BoxDecoration(
+                      //             color: black,
+                      //             border: Border.all(color: Colors.white)),
+                      //         child: TextButton(
+                      //             onPressed: () async {
+                      //               if (_formKey.currentState!.validate()) {
+                      //                 setState(() {
+                      //                   _loading = true;
+                      //                 });
+                      //                 await Future.delayed(
+                      //                     const Duration(seconds: 2));
+                      //                 _loading = false;
+                      //                 Navigator.pushReplacement(
+                      //                     context,
+                      //                     MaterialPageRoute(
+                      //                         builder: (context) =>
+                      //                             const LibraryScreen()));
+                      //               }
+                      //             },
+                      //             child: const Text("SIGN IN",
+                      //                 style: TextStyle(
+                      //                     color: Colors.white,
+                      //                     fontSize: 18,
+                      //                     fontWeight: FontWeight.w700))),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
 
                       // _loading
                       //     ?
@@ -174,6 +252,36 @@ class _EntryScreenState extends State<EntryScreen> {
                             //     MaterialPageRoute(
                             //         builder: (context) => ResetPassword()));
                           },
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Center(
+                              child: Text(
+                                'New User? ',
+                                style: TextStyle(fontSize: 16, color: orange),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            InkWell(
+                              child: Text(
+                                'Create account',
+                                style: TextStyle(color: white, fontSize: 16.0),
+                              ),
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RegisterScreen()));
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                          ],
                         ),
                       ),
                     ],
