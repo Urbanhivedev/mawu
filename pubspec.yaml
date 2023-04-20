@@ -52,9 +52,19 @@ dependencies:
   video_player: ^2.6.0
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/mawu_icon.png"
+  adaptive_icon_foreground: "assets/icons/mawu_icon.png"
+  background_color: "#FF000000"
+  adaptive_icon_background: "#FF000000"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
